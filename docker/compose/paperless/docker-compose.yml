@@ -40,8 +40,6 @@ services:
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
-    ports:
-      - 8080:8000
     depends_on:
       - redis
       - postgres
@@ -49,6 +47,8 @@ services:
       - tika
     networks:
       default:
+      proxy:
+
     healthcheck:
       test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
       interval: 30s
@@ -77,3 +77,5 @@ services:
 
 networks:
   default:
+  proxy:
+    external: true
