@@ -1,0 +1,81 @@
+version: "3.4"
+services:
+
+  redis:
+    image: docker.io/library/redis:latest
+    restart: unless-stopped
+    networks:
+      default:
+    volumes:
+      - /data/paperless/redis:/data
+
+  postgres:
+    image: docker.io/library/postgres:latest
+    restart: unless-stopped
+    networks:
+      default:
+    volumes:
+       - /data/paperless/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: $PAPERLESS_DBNAME
+      POSTGRES_USER: $PAPERLESS_DBUSER
+      POSTGRES_PASSWORD: $PAPERLESS_DBPASS
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:latest
+    restart: unless-stopped
+    networks:
+      default:
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: ghcr.io/paperless-ngx/tika:latest
+    restart: unless-stopped
+    networks:
+      default:
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+      - gotenberg
+      - tika
+    networks:
+      default:
+      proxy:
+
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /data/paperless/paperless/data:/usr/src/paperless/data
+      - /data/paperless/paperless/media:/usr/src/paperless/media
+      - /data/paperless/paperless/export:/usr/src/paperless/export
+      - /data/paperless/paperless/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_ADMIN_USER: $PAPERLESS_ADMIN_USER
+      PAPERLESS_ADMIN_PASSWORD: $PAPERLESS_ADMIN_PASSWORD
+      PAPERLESS_DBHOST: postgres
+      PAPERLESS_DBNAME: $PAPERLESS_DBNAME
+      PAPERLESS_DBUSER: $PAPERLESS_DBUSER
+      PAPERLESS_DBPASS: $PAPERLESS_DBPASS
+      PAPERLESS_OCR_LANGUAGE: deu
+      PAPERLESS_REDIS: redis://redis:6379
+      PAPERLESS_SECRET_KEY: $PAPERLESS_SECRET_KEY
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_URL: $PAPERLESS_URL
+
+networks:
+  default:
+  proxy:
+    external: true
