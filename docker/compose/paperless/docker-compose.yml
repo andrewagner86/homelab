@@ -7,7 +7,7 @@ services:
     networks:
       default:
     volumes:
-      - /data/paperless/redis:/data
+      - /opt/docker/paperless/redis:/data
 
   postgres:
     image: docker.io/library/postgres:latest
@@ -15,7 +15,7 @@ services:
     networks:
       default:
     volumes:
-       - /data/paperless/postgres:/var/lib/postgresql/data
+       - /opt/docker/paperless/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: $PAPERLESS_DBNAME
       POSTGRES_USER: $PAPERLESS_DBUSER
@@ -55,10 +55,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - /data/paperless/paperless/data:/usr/src/paperless/data
-      - /data/paperless/paperless/media:/usr/src/paperless/media
-      - /data/paperless/paperless/export:/usr/src/paperless/export
-      - /data/paperless/paperless/consume:/usr/src/paperless/consume
+      - /opt/docker/paperless/paperless/data:/usr/src/paperless/data
+      - /opt/docker/paperless/paperless/media:/usr/src/paperless/media
+      - /opt/docker/paperless/paperless/export:/usr/src/paperless/export
+      - /opt/docker/paperless/paperless/consume:/usr/src/paperless/consume
     environment:
       PAPERLESS_ADMIN_USER: $PAPERLESS_ADMIN_USER
       PAPERLESS_ADMIN_PASSWORD: $PAPERLESS_ADMIN_PASSWORD
