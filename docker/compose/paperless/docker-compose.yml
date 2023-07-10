@@ -48,7 +48,6 @@ services:
     networks:
       default:
       proxy:
-
     healthcheck:
       test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
       interval: 30s
@@ -77,7 +76,7 @@ services:
 
   samba:
     image: crazymax/samba
-    container_name: samba
+    restart: unless-stopped
     network_mode: host
     volumes:
       - "/opt/docker/samba/data:/data"
@@ -85,7 +84,6 @@ services:
     environment:
       - "TZ=Europe/Berlin"
       - "SAMBA_LOG_LEVEL=0"
-    restart: always
 
 networks:
   default:
