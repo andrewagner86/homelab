@@ -75,6 +75,18 @@ services:
       PAPERLESS_TIME_ZONE: Europe/Berlin
       PAPERLESS_URL: $PAPERLESS_URL
 
+  samba:
+    image: crazymax/samba
+    container_name: samba
+    network_mode: host
+    volumes:
+      - "/opt/docker/samba/data:/data"
+      - "/opt/docker/paperless/paperless/consume:/samba/paperless"
+    environment:
+      - "TZ=Europe/Berlin"
+      - "SAMBA_LOG_LEVEL=0"
+    restart: always
+
 networks:
   default:
   proxy:
