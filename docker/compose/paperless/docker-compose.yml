@@ -2,27 +2,27 @@ version: "3.4"
 services:
 
   redis:
-    image: docker.io/library/redis:latest
+    image: redis:latest
     restart: unless-stopped
     networks:
       default:
     volumes:
-      - /opt/docker/paperless/redis:/data
+      - redis.data:/data
 
   postgres:
-    image: docker.io/library/postgres:latest
+    image: postgres:latest
     restart: unless-stopped
     networks:
       default:
     volumes:
-       - /opt/docker/paperless/postgres:/var/lib/postgresql/data
+       - postgres.data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: $PAPERLESS_DBNAME
       POSTGRES_USER: $PAPERLESS_DBUSER
       POSTGRES_PASSWORD: $PAPERLESS_DBPASS
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:latest
+    image: gotenberg/gotenberg:latest
     restart: unless-stopped
     networks:
       default:
@@ -54,10 +54,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - /opt/docker/paperless/paperless/data:/usr/src/paperless/data
-      - /opt/docker/paperless/paperless/media:/usr/src/paperless/media
-      - /opt/docker/paperless/paperless/export:/usr/src/paperless/export
-      - /opt/docker/paperless/paperless/consume:/usr/src/paperless/consume
+      - paperless.data:/usr/src/paperless/data
+      - paperless.media:/usr/src/paperless/media
+      - paperless.export:/usr/src/paperless/export
+      - samba_paperless.consume:/usr/src/paperless/consume
     environment:
       PAPERLESS_ADMIN_USER: $PAPERLESS_ADMIN_USER
       PAPERLESS_ADMIN_PASSWORD: $PAPERLESS_ADMIN_PASSWORD
@@ -74,16 +74,14 @@ services:
       PAPERLESS_TIME_ZONE: Europe/Berlin
       PAPERLESS_URL: $PAPERLESS_URL
 
-  samba:
-    image: crazymax/samba
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - "/opt/docker/samba/data:/data"
-      - "/opt/docker/paperless/paperless/consume:/samba/paperless"
-    environment:
-      - "TZ=Europe/Berlin"
-      - "SAMBA_LOG_LEVEL=0"
+volumes:
+  redis.data:
+  postgres.data:
+  paperless.data:
+  paperless.media:
+  paperless.export:
+  samba_paperless.consume:
+    external: true
 
 networks:
   default:

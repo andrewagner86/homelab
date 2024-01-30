@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  samba:
+    image: servercontainers/samba:latest
+    container_name: samba
+    restart: unless-stopped
+    environment:
+      ACCOUNT_paperless: $SAMBA_PAPERLESS_PASSWORD
+      SAMBA_VOLUME_CONFIG_paperless_consume: "[paperless.consume]; path=/shares/paperless/consume; force user = paperless; guest ok = no; read only = no; browseable = yes;"
+    volumes:
+      - samba.shares:/shares
+      - paperless.consume:/shares/paperless/consume
+    ports:
+      - 445:445
+
+volumes:
+  samba.shares:
+  paperless.consume:
