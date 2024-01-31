@@ -1,0 +1,21 @@
+version: "3.4"
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    networks:
+      proxy:
+    environment:
+      #ADMIN_TOKEN: $VAULTWARDEN_ADMIN_TOKEN
+      LOG_LEVEL: info
+      TZ: Europe/Berlin
+      SIGNUPS_ALLOWED: false
+    volumes:
+      - vaultwarden.data:/data/
+
+volumes:
+  vaultwarden.data:
+
+networks:
+  proxy:
+    external: true
