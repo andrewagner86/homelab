@@ -1,0 +1,23 @@
+version: "3.4"
+services:
+  virtualhere:
+    image: andrewagner86/virtualhere:latest
+    restart: unless-stopped
+    privileged: true
+    environment:
+      UUID: $VIRTUALHERE_UUID
+      LICENSE: $VIRTUALHERE_LICENSE
+      SERVERNAME: $VIRTUALHERE_SERVERNAME
+      IGNOREDDEVICES: $VIRTUALHERE_IGNOREDDEVICES
+    networks:
+      default:
+    ports:
+      - 7575:7575
+    volumes:
+      - virtualhere.data:/data/
+
+volumes:
+  virtualhere.data:
+
+networks:
+  default:
