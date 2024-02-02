@@ -1,0 +1,13 @@
+---
+- name: update and upgrade packages
+  hosts: all
+  become: true
+  tasks:
+    - name: update packages with apt
+      when: ansible_pkg_mgr == 'apt'
+      apt:
+        update_cache: yes
+    - name: upgrade packages with apt
+      when: ansible_pkg_mgr == 'apt'
+      apt:
+        upgrade: yes #dist for dist-upgrade
